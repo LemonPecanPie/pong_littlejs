@@ -10,6 +10,11 @@
 
 const levelSize = vec2(20, 20);
 
+class Paddle extends EngineObject {
+    update() {
+        this.pox.x = mousePos.x;
+    }
+}
 
 function gameInit() {
     // called once after the engine starts up
@@ -23,6 +28,8 @@ function gameInit() {
 
     setCameraPos(levelSize.scale(.5));
     setCanvasFixedSize(vec2(1280, 720));
+
+    new Paddle;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

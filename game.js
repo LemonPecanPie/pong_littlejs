@@ -11,16 +11,21 @@
 const levelSize = vec2(20, 20);
 
 class Paddle extends EngineObject {
+
+    constructor() {
+        super(vec2(0, 1), vec2(6, .5));
+    }
     update() {
-        this.pox.x = mousePos.x;
+        // clamp paddle to level size
+        this.pos.x = clamp(this.pos.x, this.size.x / 2, levelSize.x - this.size.x / 2);
     }
 }
 
 function gameInit() {
     // called once after the engine starts up
     // setup the game
-    for (let x = 2; x <= levelSize.x-2; x += 2)
-        for (let y = 12; y <= levelSize.y-2; y += 1) {
+    for (let x = 2; x <= levelSize.x - 2; x += 2)
+        for (let y = 12; y <= levelSize.y - 2; y += 1) {
             const brick = new EngineObject(vec2(x, y));
             brick.color = randColor();
 

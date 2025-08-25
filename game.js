@@ -8,7 +8,8 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-const levelSize = vec2(20, 20);
+const levelSize = vec2(38, 20);
+let ball;
 
 class Paddle extends EngineObject {
 
@@ -18,8 +19,8 @@ class Paddle extends EngineObject {
         this.mass = 0;
     }
     update() {
+        this.pos.x = mousePos.x;
         // clamp paddle to level size
-        this.pos.x = clamp(this.pos.x, this.size.x / 2, levelSize.x - this.size.x / 2);
         this.pos.x = clamp(this.pos.x, this.size.x / 2, levelSize.x - this.size.x / 2);
     }
 }
@@ -34,12 +35,34 @@ class Ball extends EngineObject {
     }
 }
 
+class Wall extends EngineObject {
+    constructor(pos, size) {
+        super(pos, size);
+        this.setCollision();
+        this.mass = 0;
+        this.color = new Color(0,0,0,0);
+    }
+}
+
+class Brick extends EngineObject {
+    constructor(pos, size) {
+        super(pos, size);
+        this.setCollision();
+        this.mass = 0;
+    }
+
+    collideWithObject(o) {
+        this.destroy();
+        return true;
+    }
+}
+
 function gameInit() {
     // called once after the engine starts up
     // setup the game
     for (let x = 2; x <= levelSize.x - 2; x += 2)
         for (let y = 12; y <= levelSize.y - 2; y += 1) {
-            const brick = new EngineObject(vec2(x, y));
+            const brick = new Brick(vec2(x, y), vec2(2, 1));
             brick.color = randColor();
 
         }
@@ -48,13 +71,24 @@ function gameInit() {
     setCanvasFixedSize(vec2(1280, 720));
 
     new Paddle;
-    new Ball(cameraPos);
+    // new Ball(cameraPos);
+
+
+    new Wall(vec2(-.5, levelSize.y / 2), vec2(1, 100));
+    new Wall(vec2(levelSize.x + .5, levelSize.y / 2), vec2(1, 100));
+    new Wall(vec2(levelSize.x / 2, levelSize.y + .5), vec2(100, 1));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 function gameUpdate() {
     // called every frame at 60 frames per second
     // handle input and update the game state
+    if (!ball || ball.pos.y < -1) {
+        if (ball)
+            ball.destroy();
+
+        ball = new Ball(cameraPos);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

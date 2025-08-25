@@ -10,6 +10,10 @@
 
 const levelSize = vec2(38, 20);
 let ball;
+let score = 0;
+const sound_bounce = new Sound([, , 1e3, , .03, .02, 1, 2, , , 940, .03, , , , , .2, .6, , .06], 0);
+const sound_break = new Sound([, , 90, , .01, .03, 4, , , , , , , 9, 50, .2, , .2, .01], 0);
+const sound_start = new Sound([, 0, 500, , .04, .3, 1, 2, , , 570, .02, .02, , , , .04]);
 
 class Paddle extends EngineObject {
 
@@ -33,6 +37,11 @@ class Ball extends EngineObject {
         this.setCollision();
         this.elasticity = 1;
     }
+
+    collideWithObject(o) {
+        sound_bounce.play();
+        return true;
+    }
 }
 
 class Wall extends EngineObject {
@@ -40,7 +49,7 @@ class Wall extends EngineObject {
         super(pos, size);
         this.setCollision();
         this.mass = 0;
-        this.color = new Color(0,0,0,0);
+        this.color = new Color(0, 0, 0, 0);
     }
 }
 
@@ -53,6 +62,8 @@ class Brick extends EngineObject {
 
     collideWithObject(o) {
         this.destroy();
+        ++score;
+        sound_break.play();
         return true;
     }
 }
@@ -83,11 +94,16 @@ function gameInit() {
 function gameUpdate() {
     // called every frame at 60 frames per second
     // handle input and update the game state
-    if (!ball || ball.pos.y < -1) {
-        if (ball)
-            ball.destroy();
-
-        ball = new Ball(cameraPos);
+    if (ball && ball.pos.y < -1) // if ball is below level
+    {
+        // destroy old ball
+        ball.destroy();
+        ball = 0;
+    }
+    if (!ball && mouseWasPressed(0)) // if there is no ball and left mouse is pressed
+    {
+        ball = new Ball(cameraPos); // create a ball
+        sound_start.play(); // play start sound
     }
 }
 
@@ -109,7 +125,7 @@ function gameRender() {
 function gameRenderPost() {
     // called after objects are rendered
     // draw effects or hud that appear above all objects
-    // drawTextScreen('Hello World!', mainCanvasSize.scale(.5), 80);
+    drawTextScreen('Score ' + score, vec2(mainCanvasSize.x / 2, 70), 50);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -14,10 +14,23 @@ class Paddle extends EngineObject {
 
     constructor() {
         super(vec2(0, 1), vec2(6, .5));
+        this.setCollision();
+        this.mass = 0;
     }
     update() {
         // clamp paddle to level size
         this.pos.x = clamp(this.pos.x, this.size.x / 2, levelSize.x - this.size.x / 2);
+        this.pos.x = clamp(this.pos.x, this.size.x / 2, levelSize.x - this.size.x / 2);
+    }
+}
+
+class Ball extends EngineObject {
+    constructor(pos) {
+        super(pos, vec2(.5));
+
+        this.velocity = vec2(-.1, -.1);
+        this.setCollision();
+        this.elasticity = 1;
     }
 }
 
@@ -35,6 +48,7 @@ function gameInit() {
     setCanvasFixedSize(vec2(1280, 720));
 
     new Paddle;
+    new Ball(cameraPos);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
